@@ -35,7 +35,11 @@ async function run() {
         res.send(result);
     });
 
-    
+    // get reviews data
+    app.get("/reviews", async(req, res)=>{
+        const result = await reviewCollection.find().toArray();
+        res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
