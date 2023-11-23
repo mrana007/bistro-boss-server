@@ -30,7 +30,13 @@ async function run() {
     const reviewCollection = client.db("bistroDb").collection("reviews");
     const cartCollection = client.db("bistroDb").collection("carts");
 
-    // users related api // post user data in mongodb
+    // users related api
+    // get user data from mongodb
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+    // post user data in mongodb
     app.post('/users', async(req, res)=>{
       const user = req.body;
       // insert email if user doesn't exists:
@@ -41,6 +47,13 @@ async function run() {
         return res.send({ message: 'user already exists', insertedId: null })
       }
       const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+    // delete users
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
       res.send(result);
     });
 
@@ -76,7 +89,6 @@ async function run() {
       const query = { _id: new ObjectId(id) };
       const result = await cartCollection.deleteOne(query);
       res.send(result);
-
     });
 
     // Send a ping to confirm a successful connection
