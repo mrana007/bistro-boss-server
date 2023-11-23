@@ -37,16 +37,28 @@ async function run() {
       res.send(result);
     });
     // post user data in mongodb
-    app.post('/users', async(req, res)=>{
+    app.post("/users", async (req, res) => {
       const user = req.body;
       // insert email if user doesn't exists:
       // you can do this in many ways (1. email unique, 2. upsert & 3. simple checking)
       const query = { email: user.email };
       const existingUser = await userCollection.findOne(query);
-      if(existingUser){
-        return res.send({ message: 'user already exists', insertedId: null })
+      if (existingUser) {
+        return res.send({ message: "user already exists", insertedId: null });
       }
       const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+    // make user as Admin
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
     // delete users
